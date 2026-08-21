@@ -1,0 +1,9 @@
+{
+  "name": "CustomShipping",
+  "description": "Bridges externally generated shipping labels into plentyONE shipping packages.",
+  "namespace": "CustomShipping",
+  "author": "VCE Verkehrslogistik Consulting & Engineering GmbH",
+  "type": "shipping",
+  "serviceProvider": "CustomShipping\\Providers\\CustomShippingServiceProvider",
+  "version": "1.0.0"
+}
