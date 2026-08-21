@@ -8,6 +8,7 @@ use Plenty\Modules\Order\Shipping\Package\Contracts\OrderShippingPackageReposito
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Http\Request;
 use Plenty\Plugin\Http\Response;
+use VCEShipping\Security\RequestAuthenticator;
 
 class ShippingLabelResource extends Controller
 {
@@ -17,6 +18,7 @@ class ShippingLabelResource extends Controller
     public function __construct(
         private Request $request,
         private Response $response,
+        private RequestAuthenticator $authenticator,
         private OrderShippingPackageRepositoryContract $packages,
         private DocumentRepositoryContract $documents,
         private ShippingInformationRepositoryContract $shippingInformation
@@ -25,6 +27,9 @@ class ShippingLabelResource extends Controller
 
     public function store(int $orderId)
     {
+        if (!$this->authenticator->authenticate($this->request)) {
+            return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
         $payload = $this->request->all();
         $error = $this->validatePayload($payload);
         if ($error !== null) {

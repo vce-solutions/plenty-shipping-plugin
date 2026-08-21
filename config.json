@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "menu": {
+    "security": {
+      "label": "Security",
+      "formFields": {
+        "security.sharedSecret": {
+          "type": "inputText",
+          "required": true,
+          "label": "Shared secret",
+          "options": {
+            "isPassword": true,
+            "tooltip": "Tenant-specific HMAC secret shared with the VCE ESB."
+          }
+        }
+      }
+    }
+  }
+}
