@@ -12,10 +12,7 @@ class VCEShippingRouteServiceProvider extends RouteServiceProvider
     {
         $api->version(
             ['v1'],
-            [
-                'namespace' => 'VCEShipping\\Api\\Resources',
-                'middleware' => ['oauth']
-            ],
+            ['namespace' => 'VCEShipping\\Api\\Resources'],
             function (ApiRouter $api): void {
                 $api->post(
                     'custom-shipping/orders/{orderId}/shipping-label',

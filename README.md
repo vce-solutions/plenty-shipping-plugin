@@ -13,7 +13,7 @@ The endpoint recreates the native post-registration state for externally generat
 - verify that the document has status `done`
 - save shipping information with status `registered`
 
-Requests require a valid plentyONE API user Bearer token. The route is protected by plentyONE's `oauth` middleware.
+Requests use the plentyONE REST API authentication context.
 
 ## Deployment
 
