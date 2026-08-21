@@ -2,7 +2,6 @@
 
 namespace VCEShipping\Api\Resources;
 
-use Plenty\Modules\Authorization\Contracts\AuthorizedUserRepositoryContract;
 use Plenty\Modules\Document\Contracts\DocumentRepositoryContract;
 use Plenty\Modules\Order\Shipping\Information\Contracts\ShippingInformationRepositoryContract;
 use Plenty\Modules\Order\Shipping\Package\Contracts\OrderShippingPackageRepositoryContract;
@@ -18,7 +17,6 @@ class ShippingLabelResource extends Controller
     public function __construct(
         private Request $request,
         private Response $response,
-        private AuthorizedUserRepositoryContract $authorizedUsers,
         private OrderShippingPackageRepositoryContract $packages,
         private DocumentRepositoryContract $documents,
         private ShippingInformationRepositoryContract $shippingInformation
@@ -27,9 +25,6 @@ class ShippingLabelResource extends Controller
 
     public function store(int $orderId)
     {
-        if ($this->authorizedUsers->getCurrentAuthorizedUser() === null) {
-            return $this->response->json(['message' => 'Authentication required'], Response::HTTP_UNAUTHORIZED);
-        }
         $payload = $this->request->all();
         $error = $this->validatePayload($payload);
         if ($error !== null) {

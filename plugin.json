@@ -5,5 +5,5 @@
   "author": "VCE Verkehrslogistik Consulting & Engineering GmbH",
   "type": "shipping",
   "serviceProvider": "VCEShipping\\Providers\\VCEShippingServiceProvider",
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
