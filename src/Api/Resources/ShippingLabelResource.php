@@ -1,6 +1,6 @@
 <?php
 
-namespace CustomShipping\Api\Resources;
+namespace VCEShipping\Api\Resources;
 
 use Plenty\Modules\Authorization\Contracts\AuthorizedUserRepositoryContract;
 use Plenty\Modules\Document\Contracts\DocumentRepositoryContract;

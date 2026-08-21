@@ -1,4 +1,4 @@
-# plentyONE Custom Shipping Bridge
+# VCE-Shipping for plentyONE
 
 This private plentyONE plugin exposes:
 
@@ -18,7 +18,7 @@ Requests require a valid plentyONE API user Bearer token. The route is protected
 ## Deployment
 
 1. Add this Git repository under **Plugins > Git** in plentyONE.
-2. Install and activate `CustomShipping` in the target plugin set.
+2. Install and activate `VCEShipping` in the target plugin set. plentyONE technical names cannot contain hyphens; the plugin is presented as VCE-Shipping in its description.
 3. Deploy the plugin set.
 4. Grant the calling plentyONE API user access to orders, shipping packages, documents, and shipping information.
 5. Send `Accept: application/x.plentymarkets.v1+json` when calling the endpoint.

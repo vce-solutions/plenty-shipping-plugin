@@ -1,19 +1,19 @@
 <?php
 
-namespace CustomShipping\Providers;
+namespace VCEShipping\Providers;
 
 use Plenty\Plugin\RouteServiceProvider;
 use Plenty\Plugin\Routing\ApiRouter;
 use Plenty\Plugin\Routing\Router;
 
-class CustomShippingRouteServiceProvider extends RouteServiceProvider
+class VCEShippingRouteServiceProvider extends RouteServiceProvider
 {
     public function map(Router $router, ApiRouter $api): void
     {
         $api->version(
             ['v1'],
             [
-                'namespace' => 'CustomShipping\\Api\\Resources',
+                'namespace' => 'VCEShipping\\Api\\Resources',
                 'middleware' => ['oauth']
             ],
             function (ApiRouter $api): void {
