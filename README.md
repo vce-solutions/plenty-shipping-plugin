@@ -13,7 +13,7 @@ The endpoint recreates the native post-registration state for externally generat
 - verify that the document has status `done`
 - save shipping information with status `registered`
 
-Requests require HMAC-SHA256 authentication with a different shared secret for each plentyONE installation. Configure the masked `security.sharedSecret` plugin setting and the matching ESB `plentyShippingLabelSecretRef`.
+Requests require `X-VCE-Shared-Secret` with a different shared secret for each plentyONE installation. Configure the masked `security.sharedSecret` plugin setting and the matching ESB `plentyShippingLabelSecretRef`.
 
 ## Deployment
 
