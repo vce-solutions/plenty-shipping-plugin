@@ -165,8 +165,11 @@ class ShippingLabelResource extends Controller
         return $values;
     }
 
-    private function activeDocuments(array $documents): array
+    private function activeDocuments($documents): array
     {
+        if (!is_array($documents)) {
+            $documents = [$documents];
+        }
         return array_values(array_filter($documents, function ($document): bool {
             return $document->type === self::DOCUMENT_TYPE
                 && in_array($document->status, ['pending', 'done'], true);
