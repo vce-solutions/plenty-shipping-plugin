@@ -104,7 +104,7 @@ class ShippingLabelResource extends Controller
             'transactionId' => trim((string) $payload['transactionId']),
             'shippingStatus' => 'registered',
             'shippingCosts' => isset($payload['shippingCosts']) ? (float) $payload['shippingCosts'] : 0.0,
-            'additionalData' => json_encode(['packages' => $results]),
+            'additionalData' => ['packages' => $results],
             'registrationAt' => $now,
             'shipmentAt' => $now
         ]);
