@@ -5,10 +5,10 @@ namespace VCEShipping\Api\Resources;
 use Plenty\Modules\Document\Contracts\DocumentRepositoryContract;
 use Plenty\Modules\Order\Shipping\Information\Contracts\ShippingInformationRepositoryContract;
 use Plenty\Modules\Order\Shipping\Package\Contracts\OrderShippingPackageRepositoryContract;
+use Plenty\Plugin\ConfigRepository;
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Http\Request;
 use Plenty\Plugin\Http\Response;
-use VCEShipping\Security\RequestAuthenticator;
 
 class ShippingLabelResource extends Controller
 {
@@ -18,7 +18,7 @@ class ShippingLabelResource extends Controller
     public function __construct(
         private Request $request,
         private Response $response,
-        private RequestAuthenticator $authenticator,
+        private ConfigRepository $config,
         private OrderShippingPackageRepositoryContract $packages,
         private DocumentRepositoryContract $documents,
         private ShippingInformationRepositoryContract $shippingInformation
@@ -27,7 +27,9 @@ class ShippingLabelResource extends Controller
 
     public function store(int $orderId)
     {
-        if (!$this->authenticator->authenticate($this->request)) {
+        $expectedSecret = trim((string) $this->config->get('VCEShipping.security.sharedSecret', ''));
+        $providedSecret = trim((string) $this->request->header('X-VCE-Shared-Secret', ''));
+        if ($expectedSecret === '' || $providedSecret === '' || !hash_equals($expectedSecret, $providedSecret)) {
             return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
         $payload = $this->request->all();
