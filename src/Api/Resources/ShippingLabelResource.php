@@ -29,7 +29,8 @@ class ShippingLabelResource extends Controller
     {
         $expectedSecret = trim((string) $this->config->get('VCEShipping.security.sharedSecret', ''));
         $providedSecret = trim((string) $this->request->header('X-VCE-Shared-Secret', ''));
-        if ($expectedSecret === '' || $providedSecret === '' || !hash_equals($expectedSecret, $providedSecret)) {
+        if ($expectedSecret === '' || $providedSecret === ''
+            || hash('sha256', $expectedSecret) !== hash('sha256', $providedSecret)) {
             return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
         $payload = $this->request->all();
