@@ -22,7 +22,11 @@ class ShippingController extends Controller
         $labels = [];
         foreach ($this->orderIds($request, $orderIds) as $orderId) {
             foreach ($this->packages->listOrderShippingPackages((int) $orderId) as $package) {
-                foreach ($this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE) as $document) {
+                $documents = $this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE);
+                if (!is_array($documents)) {
+                    $documents = [$documents];
+                }
+                foreach ($documents as $document) {
                     if ($document->status !== 'done') {
                         continue;
                     }
