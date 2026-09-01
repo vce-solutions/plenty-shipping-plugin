@@ -49,6 +49,16 @@ class ShippingController extends Controller
         return $labels;
     }
 
+    public function registerShipments(Request $request, array $orderIds): array
+    {
+        return [];
+    }
+
+    public function deleteShipments(Request $request, array $orderIds): array
+    {
+        return [];
+    }
+
     private function orderIds(Request $request, $orderIds): array
     {
         if (is_numeric($orderIds)) {

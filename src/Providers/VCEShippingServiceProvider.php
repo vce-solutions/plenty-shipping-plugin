@@ -17,7 +17,11 @@ class VCEShippingServiceProvider extends ServiceProvider
         $shippingServiceProviderService->registerShippingProvider(
             'VCEShipping',
             ['de' => 'VCE Shipping', 'en' => 'VCE Shipping'],
-            ['VCEShipping\\Controllers\\ShippingController@getLabels']
+            [
+                'VCEShipping\\Controllers\\ShippingController@registerShipments',
+                'VCEShipping\\Controllers\\ShippingController@deleteShipments',
+                'VCEShipping\\Controllers\\ShippingController@getLabels'
+            ]
         );
     }
 }
