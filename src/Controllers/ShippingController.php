@@ -22,6 +22,13 @@ class ShippingController extends Controller
         $labels = [];
         foreach ($this->orderIds($request, $orderIds) as $orderId) {
             foreach ($this->packages->listOrderShippingPackages((int) $orderId) as $package) {
+                if (!empty($package->labelPath)) {
+                    $storageObject = $this->documents->getDocumentStorageObject($package->labelPath);
+                    if ($storageObject !== null && $storageObject->body !== null) {
+                        $labels[] = $storageObject->body;
+                        continue;
+                    }
+                }
                 $documents = $this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE);
                 if (!is_array($documents) && !($documents instanceof \Traversable)) {
                     $documents = [$documents];

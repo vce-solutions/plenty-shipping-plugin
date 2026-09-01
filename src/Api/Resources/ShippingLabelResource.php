@@ -80,6 +80,9 @@ class ShippingLabelResource extends Controller
             if ($document->status !== 'done') {
                 throw new \RuntimeException('The shipping label is still pending for package ' . $packageId);
             }
+            if (!empty($document->path)) {
+                $this->packages->updateOrderShippingPackage($packageId, ['label' => (string) $document->path]);
+            }
             if (!empty($document->content)
                 && hash('sha256', base64_decode((string) $document->content, true))
                     !== hash('sha256', base64_decode((string) $packageData['labelBase64'], true))) {
