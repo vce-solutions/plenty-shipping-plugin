@@ -2,18 +2,18 @@
 
 namespace VCEShipping\Controllers;
 
-use Plenty\Modules\Document\Contracts\DocumentRepositoryContract;
 use Plenty\Modules\Order\Shipping\Package\Contracts\OrderShippingPackageRepositoryContract;
+use Plenty\Modules\Plugin\Storage\Contracts\StorageRepositoryContract;
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Http\Request;
 
 class ShippingController extends Controller
 {
-    private const DOCUMENT_TYPE = 'shipping_label';
+    private const STORAGE_PLUGIN = 'VCEShipping';
 
     public function __construct(
-        private DocumentRepositoryContract $documents,
-        private OrderShippingPackageRepositoryContract $packages
+        private OrderShippingPackageRepositoryContract $packages,
+        private StorageRepositoryContract $storage
     ) {
     }
 
@@ -22,27 +22,9 @@ class ShippingController extends Controller
         $labels = [];
         foreach ($this->orderIds($request, $orderIds) as $orderId) {
             foreach ($this->packages->listOrderShippingPackages((int) $orderId) as $package) {
-                if (!empty($package->labelPath)) {
-                    $storageObject = $this->documents->getDocumentStorageObject($package->labelPath);
-                    if ($storageObject !== null && $storageObject->body !== null) {
-                        $labels[] = $storageObject->body;
-                        continue;
-                    }
-                }
-                $documents = $this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE);
-                if (!is_array($documents) && !($documents instanceof \Traversable)) {
-                    $documents = [$documents];
-                }
-                foreach ($documents as $document) {
-                    if (!empty($document->content)) {
-                        $content = base64_decode((string) $document->content, true);
-                        $labels[] = $content === false ? $document->content : $content;
-                        continue;
-                    }
-                    $storageObject = $this->documents->getDocumentStorageObject($document->path);
-                    if ($storageObject !== null && $storageObject->body !== null) {
-                        $labels[] = $storageObject->body;
-                    }
+                $storageKey = (int) $package->id . '.pdf';
+                if ($this->storage->doesObjectExist(self::STORAGE_PLUGIN, $storageKey)) {
+                    $labels[] = $this->storage->getObject(self::STORAGE_PLUGIN, $storageKey)->body;
                 }
             }
         }

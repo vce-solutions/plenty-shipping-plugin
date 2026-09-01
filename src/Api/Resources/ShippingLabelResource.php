@@ -5,6 +5,7 @@ namespace VCEShipping\Api\Resources;
 use Plenty\Modules\Document\Contracts\DocumentRepositoryContract;
 use Plenty\Modules\Order\Shipping\Information\Contracts\ShippingInformationRepositoryContract;
 use Plenty\Modules\Order\Shipping\Package\Contracts\OrderShippingPackageRepositoryContract;
+use Plenty\Modules\Plugin\Storage\Contracts\StorageRepositoryContract;
 use Plenty\Plugin\ConfigRepository;
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Http\Request;
@@ -15,6 +16,7 @@ class ShippingLabelResource extends Controller
     private const DOCUMENT_TYPE = 'shipping_label';
     private const MAX_LABEL_BYTES = 10 * 1024 * 1024;
     private const SHIPPING_SERVICE_PROVIDER = 'VCEShipping';
+    private const STORAGE_PLUGIN = 'VCEShipping';
 
     public function __construct(
         private Request $request,
@@ -22,7 +24,8 @@ class ShippingLabelResource extends Controller
         private ConfigRepository $config,
         private OrderShippingPackageRepositoryContract $packages,
         private DocumentRepositoryContract $documents,
-        private ShippingInformationRepositoryContract $shippingInformation
+        private ShippingInformationRepositoryContract $shippingInformation,
+        private StorageRepositoryContract $storage
     ) {
     }
 
@@ -80,9 +83,20 @@ class ShippingLabelResource extends Controller
             if ($document->status !== 'done') {
                 throw new \RuntimeException('The shipping label is still pending for package ' . $packageId);
             }
-            if (!empty($document->path)) {
-                $this->packages->updateOrderShippingPackage($packageId, ['label' => (string) $document->path]);
+            $storageKey = $packageId . '.pdf';
+            $label = base64_decode((string) $packageData['labelBase64'], true);
+            if ($this->storage->doesObjectExist(self::STORAGE_PLUGIN, $storageKey)) {
+                $storageObject = $this->storage->getObject(self::STORAGE_PLUGIN, $storageKey);
+                if (hash('sha256', (string) $storageObject->body) !== hash('sha256', $label)) {
+                    return $this->response->json(
+                        ['message' => 'A different shipping label already exists for package ' . $packageId],
+                        Response::HTTP_CONFLICT
+                    );
+                }
+            } else {
+                $storageObject = $this->storage->uploadObject(self::STORAGE_PLUGIN, $storageKey, $label);
             }
+            $this->packages->updateOrderShippingPackage($packageId, ['label' => (string) $storageObject->key]);
             if (!empty($document->content)
                 && hash('sha256', base64_decode((string) $document->content, true))
                     !== hash('sha256', base64_decode((string) $packageData['labelBase64'], true))) {

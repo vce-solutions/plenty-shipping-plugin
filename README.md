@@ -10,6 +10,7 @@ The endpoint recreates the native post-registration state for externally generat
 
 - find or create each order shipping package by tracking number
 - upload a `shipping_label` document linked to the package
+- mirror the PDF into plugin storage for Shipping Center downloads
 - verify that the document has status `done`
 - save shipping information with status `registered` using the `VCEShipping` provider
 
