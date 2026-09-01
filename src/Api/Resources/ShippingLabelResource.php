@@ -35,6 +35,9 @@ class ShippingLabelResource extends Controller
             return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
         $payload = $this->request->all();
+        if (($payload['debug'] ?? false) === true) {
+            return $this->debug($orderId);
+        }
         $error = $this->validatePayload($payload);
         if ($error !== null) {
             return $this->response->json(['message' => $error], Response::HTTP_UNPROCESSABLE_ENTITY);

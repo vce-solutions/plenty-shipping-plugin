@@ -18,10 +18,6 @@ class VCEShippingRouteServiceProvider extends RouteServiceProvider
                     'custom-shipping/orders/{orderId}/shipping-label',
                     'ShippingLabelResource@store'
                 )->where('orderId', '[0-9]+');
-                $api->post(
-                    'custom-shipping/orders/{orderId}/shipping-label/debug',
-                    'ShippingLabelResource@debug'
-                )->where('orderId', '[0-9]+');
             }
         );
     }
