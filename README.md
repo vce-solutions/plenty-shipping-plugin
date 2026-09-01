@@ -11,9 +11,11 @@ The endpoint recreates the native post-registration state for externally generat
 - find or create each order shipping package by tracking number
 - upload a `shipping_label` document linked to the package
 - verify that the document has status `done`
-- save shipping information with status `registered`
+- save shipping information with status `registered` using the `VCEShipping` provider
 
 Requests require `X-VCE-Shared-Secret` with a different shared secret for each plentyONE installation. Configure the masked `security.sharedSecret` plugin setting and the matching ESB `plentyShippingLabelSecretRef`.
+
+`VCEShipping` registers itself as the shipping provider. Its Shipping Center integration returns the completed `shipping_label` documents already stored on order shipping packages.
 
 ## Deployment
 

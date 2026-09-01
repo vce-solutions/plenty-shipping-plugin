@@ -14,6 +14,7 @@ class ShippingLabelResource extends Controller
 {
     private const DOCUMENT_TYPE = 'shipping_label';
     private const MAX_LABEL_BYTES = 10 * 1024 * 1024;
+    private const SHIPPING_SERVICE_PROVIDER = 'VCEShipping';
 
     public function __construct(
         private Request $request,
@@ -100,7 +101,7 @@ class ShippingLabelResource extends Controller
         $now = date(\DateTimeInterface::W3C);
         $this->shippingInformation->saveShippingInformation([
             'orderId' => $orderId,
-            'shippingServiceProvider' => trim((string) $payload['shippingServiceProvider']),
+            'shippingServiceProvider' => self::SHIPPING_SERVICE_PROVIDER,
             'transactionId' => trim((string) $payload['transactionId']),
             'shippingStatus' => 'registered',
             'shippingCosts' => isset($payload['shippingCosts']) ? (float) $payload['shippingCosts'] : 0.0,
@@ -118,8 +119,11 @@ class ShippingLabelResource extends Controller
 
     private function validatePayload(array $payload): ?string
     {
-        if (empty($payload['shippingServiceProvider']) || empty($payload['transactionId'])) {
-            return 'shippingServiceProvider and transactionId are required';
+        if (($payload['shippingServiceProvider'] ?? null) !== self::SHIPPING_SERVICE_PROVIDER) {
+            return 'shippingServiceProvider must be ' . self::SHIPPING_SERVICE_PROVIDER;
+        }
+        if (empty($payload['transactionId'])) {
+            return 'transactionId is required';
         }
         if (empty($payload['packages']) || !is_array($payload['packages'])) {
             return 'At least one package is required';
