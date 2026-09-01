@@ -23,7 +23,9 @@ class ShippingController extends Controller
         foreach ($this->orderIds($request, $orderIds) as $orderId) {
             foreach ($this->packages->listOrderShippingPackages((int) $orderId) as $package) {
                 $documents = $this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE);
-                if (!is_array($documents)) {
+                if ($documents instanceof \Traversable) {
+                    $documents = iterator_to_array($documents);
+                } elseif (!is_array($documents)) {
                     $documents = [$documents];
                 }
                 foreach ($documents as $document) {
