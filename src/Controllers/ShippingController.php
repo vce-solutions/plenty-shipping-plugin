@@ -27,6 +27,11 @@ class ShippingController extends Controller
                     $documents = [$documents];
                 }
                 foreach ($documents as $document) {
+                    if (!empty($document->content)) {
+                        $content = base64_decode((string) $document->content, true);
+                        $labels[] = $content === false ? $document->content : $content;
+                        continue;
+                    }
                     $storageObject = $this->documents->getDocumentStorageObject($document->path);
                     if ($storageObject !== null && $storageObject->body !== null) {
                         $labels[] = $storageObject->body;
