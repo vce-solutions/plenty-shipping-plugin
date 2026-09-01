@@ -64,6 +64,10 @@ class ShippingController extends Controller
         if (is_numeric($orderIds)) {
             return [$orderIds];
         }
-        return is_array($orderIds) ? $orderIds : (array) $request->get('orderIds', []);
+        if (is_array($orderIds) && count($orderIds) > 0) {
+            return $orderIds;
+        }
+        $requestOrderIds = $request->get('orderIds', []);
+        return is_numeric($requestOrderIds) ? [$requestOrderIds] : (array) $requestOrderIds;
     }
 }

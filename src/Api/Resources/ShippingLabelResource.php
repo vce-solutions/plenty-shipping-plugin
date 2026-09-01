@@ -35,9 +35,6 @@ class ShippingLabelResource extends Controller
             return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
         $payload = $this->request->all();
-        if (($payload['requestDiagnostics'] ?? false) === true) {
-            return $this->debug($orderId);
-        }
         $error = $this->validatePayload($payload);
         if ($error !== null) {
             return $this->response->json(['message' => $error], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -121,42 +118,6 @@ class ShippingLabelResource extends Controller
             'shippingStatus' => 'registered',
             'packages' => $results
         ]);
-    }
-
-    public function debug(int $orderId)
-    {
-        $expectedSecret = trim((string) $this->config->get('VCEShipping.security.sharedSecret', ''));
-        $providedSecret = trim((string) $this->request->header('X-VCE-Shared-Secret', ''));
-        if ($expectedSecret === '' || $providedSecret === ''
-            || hash('sha256', $expectedSecret) !== hash('sha256', $providedSecret)) {
-            return $this->response->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        $packages = [];
-        foreach ($this->packages->listOrderShippingPackages($orderId) as $package) {
-            $documents = $this->documents->findOrderShippingPackageDocuments((int) $package->id, self::DOCUMENT_TYPE);
-            if (!is_array($documents) && !($documents instanceof \Traversable)) {
-                $documents = [$documents];
-            }
-            $documentData = [];
-            foreach ($documents as $document) {
-                $storage = !empty($document->path)
-                    ? $this->documents->getDocumentStorageObject($document->path)
-                    : null;
-                $documentData[] = [
-                    'id' => $document->id ?? null,
-                    'path' => $document->path ?? null,
-                    'hasContent' => !empty($document->content),
-                    'storageBytes' => $storage !== null ? strlen((string) $storage->body) : 0
-                ];
-            }
-            $packages[] = [
-                'id' => $package->id,
-                'labelPath' => $package->labelPath ?? null,
-                'documents' => $documentData
-            ];
-        }
-        return $this->response->json(['packages' => $packages]);
     }
 
     private function validatePayload(array $payload): ?string
